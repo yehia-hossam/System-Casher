@@ -7,121 +7,66 @@ interface PosStore {
   cart: CartItem[];
   orders: Order[];
   lastOrder: Order | null;
-  
+
   addToCart: (product: Product) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   completeOrder: () => Order | null;
-  setLastOrder: (order: Order) => void;
 }
 
 export const usePosStore = create<PosStore>((set, get) => ({
-  // ==================== أصناف مؤقتة (للتجربة) ====================
+  // ==================== الأصناف المؤقتة (جاهزة للباك اند) ====================
   products: [
-    {
-      id: '1',
-      name: 'Hamburger',
-      nameAr: 'هامبرجر كلاسيك',
-      price: 85,
-      category: 'برجر',
-      stock: 45,
-    },
-    {
-      id: '2',
-      name: 'Cheese Burger',
-      nameAr: 'تشيز برجر',
-      price: 95,
-      category: 'برجر',
-      stock: 38,
-    },
-    {
-      id: '3',
-      name: 'Pizza Margherita',
-      nameAr: 'بيتزا مارغريتا',
-      price: 145,
-      category: 'بيتزا',
-      stock: 22,
-    },
-    {
-      id: '4',
-      name: 'Pepperoni Pizza',
-      nameAr: 'بيتزا بيبروني',
-      price: 165,
-      category: 'بيتزا',
-      stock: 18,
-    },
-    {
-      id: '5',
-      name: 'Sushi Roll',
-      nameAr: 'سوشي رول',
-      price: 120,
-      category: 'ياباني',
-      stock: 25,
-    },
-    {
-      id: '6',
-      name: 'Gratin',
-      nameAr: 'غراتان دجاج',
-      price: 110,
-      category: 'مخبوزات',
-      stock: 15,
-    },
-    {
-      id: '7',
-      name: 'Shawarma',
-      nameAr: 'شاورما دجاج',
-      price: 75,
-      category: 'سندوتشات',
-      stock: 50,
-    },
-    {
-      id: '8',
-      name: 'Falafel',
-      nameAr: 'فلافل',
-      price: 45,
-      category: 'سندوتشات',
-      stock: 60,
-    },
-    {
-      id: '9',
-      name: 'French Fries',
-      nameAr: 'بطاطس مقلية',
-      price: 35,
-      category: 'مقبلات',
-      stock: 80,
-    },
-    {
-      id: '10',
-      name: 'Cola',
-      nameAr: 'كولا',
-      price: 25,
-      category: 'مشروبات',
-      stock: 100,
-    },
-    {
-      id: '11',
-      name: 'Orange Juice',
-      nameAr: 'عصير برتقال',
-      price: 40,
-      category: 'مشروبات',
-      stock: 70,
-    },
-    {
-      id: '12',
-      name: 'Kofta Plate',
-      nameAr: 'طبق كفتة',
-      price: 130,
-      category: 'أطباق رئيسية',
-      stock: 20,
-    },
+    // برجر
+    { id: '1', name: 'Hamburger', nameAr: 'هامبرجر كلاسيك', price: 85, category: 'برجر', stock: 45 },
+    { id: '2', name: 'Cheese Burger', nameAr: 'تشيز برجر', price: 95, category: 'برجر', stock: 38 },
+    { id: '3', name: 'Double Beef Burger', nameAr: 'دبل بيف برجر', price: 135, category: 'برجر', stock: 25 },
+    { id: '4', name: 'Chicken Burger', nameAr: 'برجر دجاج', price: 80, category: 'برجر', stock: 40 },
+
+    // بيتزا
+    { id: '5', name: 'Pizza Margherita', nameAr: 'بيتزا مارغريتا', price: 145, category: 'بيتزا', stock: 22 },
+    { id: '6', name: 'Pepperoni Pizza', nameAr: 'بيتزا بيبروني', price: 165, category: 'بيتزا', stock: 18 },
+    { id: '7', name: 'Mixed Pizza', nameAr: 'بيتزا مشكل', price: 175, category: 'بيتزا', stock: 15 },
+    { id: '8', name: 'Chicken Ranch Pizza', nameAr: 'بيتزا رانش دجاج', price: 160, category: 'بيتزا', stock: 20 },
+
+    // سندوتشات وشاورما
+    { id: '9', name: 'Shawarma Chicken', nameAr: 'شاورما دجاج', price: 75, category: 'سندوتشات', stock: 50 },
+    { id: '10', name: 'Shawarma Meat', nameAr: 'شاورما لحم', price: 85, category: 'سندوتشات', stock: 35 },
+    { id: '11', name: 'Falafel Sandwich', nameAr: 'ساندوتش فلافل', price: 45, category: 'سندوتشات', stock: 60 },
+    { id: '12', name: 'Kofta Sandwich', nameAr: 'ساندوتش كفتة', price: 70, category: 'سندوتشات', stock: 30 },
+
+    // أطباق رئيسية
+    { id: '13', name: 'Kofta Plate', nameAr: 'طبق كفتة', price: 130, category: 'أطباق رئيسية', stock: 20 },
+    { id: '14', name: 'Grilled Chicken', nameAr: 'دجاج مشوي', price: 140, category: 'أطباق رئيسية', stock: 25 },
+    { id: '15', name: 'Molokhia with Chicken', nameAr: 'ملوخية بالدجاج', price: 95, category: 'أطباق رئيسية', stock: 18 },
+
+    // مقبلات وإضافات
+    { id: '16', name: 'French Fries', nameAr: 'بطاطس مقلية', price: 35, category: 'مقبلات', stock: 80 },
+    { id: '17', name: 'Onion Rings', nameAr: 'حلقات بصل', price: 45, category: 'مقبلات', stock: 40 },
+    { id: '18', name: 'Coleslaw', nameAr: 'كول سلو', price: 30, category: 'مقبلات', stock: 55 },
+
+    // مشروبات
+    { id: '19', name: 'Cola', nameAr: 'كولا', price: 25, category: 'مشروبات', stock: 100 },
+    { id: '20', name: 'Pepsi', nameAr: 'بيبسي', price: 25, category: 'مشروبات', stock: 95 },
+    { id: '21', name: 'Orange Juice', nameAr: 'عصير برتقال', price: 40, category: 'مشروبات', stock: 70 },
+    { id: '22', name: 'Mango Juice', nameAr: 'عصير مانجو', price: 45, category: 'مشروبات', stock: 60 },
+    { id: '23', name: 'Water', nameAr: 'مياه', price: 10, category: 'مشروبات', stock: 150 },
+
+    // حلويات
+    { id: '24', name: 'Kunafa', nameAr: 'كنافة', price: 65, category: 'حلويات', stock: 12 },
+    { id: '25', name: 'Rice Pudding', nameAr: 'رز بحليب', price: 50, category: 'حلويات', stock: 25 },
+    { id: '26', name: 'Chocolate Cake', nameAr: 'كيك شوكولاتة', price: 75, category: 'حلويات', stock: 15 },
+
+    // إضافي
+    { id: '27', name: 'Garlic Sauce', nameAr: 'صوص ثوم', price: 15, category: 'إضافات', stock: 90 },
+    { id: '28', name: 'BBQ Sauce', nameAr: 'صوص باربيكيو', price: 15, category: 'إضافات', stock: 85 },
   ],
 
   cart: [],
   orders: [],
   lastOrder: null,
 
-  // ==================== الدوال ====================
   addToCart: (product) => {
     const cart = get().cart;
     const existing = cart.find(item => item.id === product.id);
@@ -129,9 +74,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
     if (existing) {
       set({
         cart: cart.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         )
       });
     } else {
@@ -139,9 +82,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
     }
   },
 
-  removeFromCart: (id) => {
-    set({ cart: get().cart.filter(item => item.id !== id) });
-  },
+  removeFromCart: (id) => set({ cart: get().cart.filter(item => item.id !== id) }),
 
   updateQuantity: (id, quantity) => {
     if (quantity < 1) return;
@@ -158,17 +99,12 @@ export const usePosStore = create<PosStore>((set, get) => ({
     const cart = get().cart;
     if (cart.length === 0) return null;
 
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const newOrder: Order = {
       id: `ORD-${Date.now()}`,
-      orderNumber: `#${Math.floor(10000 + Math.random() * 90000)}`,
       customerName: "عميل عام",
       items: [...cart],
-      total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
-      subTotal: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
-      deliveryCharge: 10,
-      discount: 0,
-      paymentMethod: 'delivery',
-      cashierName: 'الكاشير الحالي',
+      total: total,
       date: new Date().toISOString(),
       status: 'completed',
     };
@@ -181,6 +117,4 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
     return newOrder;
   },
-
-  setLastOrder: (order) => set({ lastOrder: order }),
 }));

@@ -3,18 +3,8 @@
 
 import React, { useState } from 'react';
 import { 
-  LayoutDashboard, 
-  ShoppingCart, 
-  TrendingUp, 
-  Package, 
-  Receipt, 
-  Truck, 
-  Settings, 
-  LogOut, 
-  UserPlus, 
-  PlusCircle,
-  Key,
-  Menu 
+  ShoppingCart, TrendingUp, Package, 
+  Receipt, Truck, Settings, LogOut
 } from 'lucide-react';
 
 interface LeftPanelProps {
@@ -27,21 +17,19 @@ const LeftPanel: React.FC<LeftPanelProps> = ({ activeTab, setActiveTab, isAdmin 
   const [isExpanded, setIsExpanded] = useState(false);
 
   const cashierMenu = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'orders', label: 'Point of Sale', icon: ShoppingCart },
-    { id: 'returns', label: 'Returns', icon: Receipt },
-    { id: 'expenses', label: 'Expenses', icon: Receipt },
+    { id: 'pos', label: 'نقاط البيع', icon: ShoppingCart },
+    { id: 'returns', label: 'المرتجعات', icon: Receipt },
+    { id: 'expenses', label: 'المصاريف', icon: Receipt },
   ];
 
   const adminMenu = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'orders', label: 'Point of Sale', icon: ShoppingCart },
-    { id: 'sales', label: 'Sales Analytics', icon: TrendingUp },
-    { id: 'inventory', label: 'Inventory', icon: Package },
-    { id: 'returns', label: 'Returns', icon: Receipt },
-    { id: 'expenses', label: 'Expenses', icon: Receipt },
-    { id: 'delivery', label: 'Delivery', icon: Truck },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'pos', label: 'نقاط البيع', icon: ShoppingCart },
+    { id: 'sales', label: 'تحليل المبيعات', icon: TrendingUp },
+    { id: 'inventory', label: 'المخزون', icon: Package },
+    { id: 'returns', label: 'المرتجعات', icon: Receipt },
+    { id: 'expenses', label: 'المصاريف', icon: Receipt },
+    { id: 'delivery', label: 'التوصيل', icon: Truck },
+    { id: 'settings', label: 'الإعدادات', icon: Settings },
   ];
 
   const menuItems = isAdmin ? adminMenu : cashierMenu;
@@ -55,7 +43,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({ activeTab, setActiveTab, isAdmin 
     >
       {/* Logo */}
       <div className="p-6 flex items-center gap-3 border-b border-emerald-600">
-        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-inner flex-shrink-0">
+        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-inner shrink-0">
           🍔
         </div>
         <div className={`font-bold text-3xl tracking-tight transition-all duration-200 ${isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>
@@ -79,30 +67,13 @@ const LeftPanel: React.FC<LeftPanelProps> = ({ activeTab, setActiveTab, isAdmin 
                   : 'hover:bg-emerald-600 text-white/90'
                 }`}
             >
-              <Icon size={24} className="flex-shrink-0" />
+              <Icon size={24} className="shrink-0" />
               <span className={`transition-all duration-200 ${isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>
                 {item.label}
               </span>
             </button>
           );
         })}
-
-        {/* Admin Quick Actions */}
-        {isAdmin && isExpanded && (
-          <div className="mt-8 px-4">
-            <p className="text-emerald-200 text-xs uppercase tracking-widest mb-3">Quick Actions</p>
-            
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-emerald-600 rounded-2xl text-sm">
-              <UserPlus size={20} />
-              <span>Add New Cashier</span>
-            </button>
-
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-emerald-600 rounded-2xl text-sm">
-              <PlusCircle size={20} />
-              <span>Add New Item</span>
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Logout */}

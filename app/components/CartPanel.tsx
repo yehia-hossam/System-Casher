@@ -2,11 +2,14 @@
 'use client';
 
 import { usePosStore } from '../store/usePosStore';
+import { CartItem } from '../types';
 import { Trash2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function CartPanel() {
-  const { cart = [], removeFromCart, updateQuantity, total = 0 } = usePosStore();
+  const { cart = [], removeFromCart, updateQuantity } = usePosStore();
 
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const tax = total * 0.1;
   const serviceCharge = 2.50;
   const grandTotal = total + tax + serviceCharge;
@@ -42,14 +45,16 @@ export default function CartPanel() {
             <p className="text-sm mt-2 text-center">Start adding delicious items from the menu</p>
           </div>
         ) : (
-          cart.map((item: any) => (
+          cart.map((item: CartItem) => (
             <div 
               key={item.id} 
               className="bg-white rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-200 group"
             >
               <div className="flex gap-4">
-                <img
+                <Image
                   src={item.image || '/placeholder.jpg'}
+                  width={80}
+                  height={80}
                   className="w-20 h-20 rounded-2xl object-cover"
                   alt={item.name}
                 />
@@ -57,7 +62,7 @@ export default function CartPanel() {
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-[15px] leading-tight">{item.name}</div>
                   <div className="text-xs text-gray-500 mt-1">
-                    {item.size} {item.cookMethod && `• ${item.cookMethod}`}
+                    {item.nameAr}
                   </div>
 
                   <div className="mt-4 flex items-center justify-between">

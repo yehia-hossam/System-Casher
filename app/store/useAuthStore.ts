@@ -22,7 +22,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     const found = mockUsers.find(u => u.name === name && u.password === password);
 
     if (found) {
-      const { password: _, ...userData } = found;
+      const { password, ...userData } = found;
       set({ user: userData });
       localStorage.setItem('elshamy_user', JSON.stringify(userData));
       return true;
