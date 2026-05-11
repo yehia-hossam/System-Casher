@@ -9,7 +9,7 @@ import Image from 'next/image';
 export default function CartPanel() {
   const { cart = [], removeFromCart, updateQuantity } = usePosStore();
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = cart.reduce((sum: number, item) => sum + item.price * item.quantity, 0);
   const tax = total * 0.1;
   const serviceCharge = 2.50;
   const grandTotal = total + tax + serviceCharge;

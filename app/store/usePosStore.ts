@@ -13,6 +13,9 @@ interface PosStore {
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   completeOrder: () => Order | null;
+  addProduct: (product: Omit<Product, 'id'>) => void;
+  deleteProduct: (id: string) => void;
+  updateStock: (id: string, stock: number) => void;
 }
 
 export const usePosStore = create<PosStore>((set, get) => ({
@@ -116,5 +119,25 @@ export const usePosStore = create<PosStore>((set, get) => ({
     });
 
     return newOrder;
+  },
+
+  addProduct: (product) => {
+    const newProduct: Product = {
+      ...product,
+      id: `PROD-${Date.now()}`,
+    };
+    set({ products: [...get().products, newProduct] });
+  },
+
+  deleteProduct: (id) => {
+    set({ products: get().products.filter(p => p.id !== id) });
+  },
+
+  updateStock: (id, stock) => {
+    set({
+      products: get().products.map(p =>
+        p.id === id ? { ...p, stock } : p
+      )
+    });
   },
 }));

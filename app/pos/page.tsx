@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { 
   LayoutDashboard, 
-  ClipboardList, 
   Utensils, 
   Wallet, 
   LogOut, 
@@ -15,7 +14,6 @@ import {
   MapPin, 
   Printer,
   Star,
-  TrendingUp,
   Settings,
   Truck,
   Clock,
@@ -23,8 +21,8 @@ import {
   Key,
   CheckCircle,
   AlertCircle,
-  Edit,
-  Eye
+  TrendingDown,
+  Boxes
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
@@ -53,6 +51,7 @@ const initialExpenses = [
   { id: 1, title: 'رواتب الموظفين', amount: 18500, date: '2026-05-01', category: 'رواتب' },
   { id: 2, title: 'إيجار المحل', amount: 12000, date: '2026-05-01', category: 'إيجارات' },
   { id: 3, title: 'فواتير كهرباء', amount: 2500, date: '2026-05-05', category: 'مرافق' },
+  { id: 4, title: 'مشتريات مطبخ', amount: 8500, date: '2026-05-10', category: 'مشتريات' },
 ];
 
 // طلبات التوصيل
@@ -272,6 +271,14 @@ export default function ProfessionalPOS() {
     ));
   };
 
+  // حذف صنف من المخزون
+  const deleteStockItem = (id: number) => {
+    if (confirm('هل أنت متأكد من حذف هذا الصنف؟')) {
+      setStock(stock.filter(item => item.id !== id));
+      showTempNotification('تم حذف الصنف بنجاح', 'success');
+    }
+  };
+
   // إدارة المصاريف
   const addExpense = () => {
     if (!newExpense.title || newExpense.amount <= 0) {
@@ -287,6 +294,14 @@ export default function ProfessionalPOS() {
     setShowAddExpenseModal(false);
     setNewExpense({ title: '', amount: 0, category: '', notes: '' });
     showTempNotification('تم إضافة المصروف بنجاح', 'success');
+  };
+
+  // حذف مصروف
+  const deleteExpense = (id: number) => {
+    if (confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
+      setExpenses(expenses.filter(exp => exp.id !== id));
+      showTempNotification('تم حذف المصروف بنجاح', 'success');
+    }
   };
 
   // إدارة المستخدمين
@@ -326,6 +341,7 @@ export default function ProfessionalPOS() {
   const lowStockItems = stock.filter(item => item.qty <= item.minStock);
   const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
   const pendingDeliveries = deliveryOrders.filter(o => o.status !== 'delivered').length;
+  const totalStockValue = stock.reduce((sum, item) => sum + (item.qty * item.price), 0);
 
   const isAdminUser = isAdmin();
 
@@ -398,22 +414,113 @@ export default function ProfessionalPOS() {
             <div className="space-y-8">
               <h2 className="text-2xl font-bold text-gray-800 border-r-4 border-emerald-500 pr-4">لوحة التحكم</h2>
               
+              {/* بطاقات الإحصائيات الرئيسية */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-6 rounded-2xl shadow-lg">
+                <div className="bg-linear-to-br from-emerald-500 to-emerald-600 text-white p-6 rounded-2xl shadow-lg">
                   <p className="text-sm opacity-90">مبيعات اليوم</p>
                   <p className="text-3xl font-bold mt-2">{salesData.today} ج.م</p>
                 </div>
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg">
+                <div className="bg-linear-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg">
                   <p className="text-sm opacity-90">مبيعات الشهر</p>
                   <p className="text-3xl font-bold mt-2">{salesData.thisMonth} ج.م</p>
                 </div>
-                <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-2xl shadow-lg">
+                <div className="bg-linear-to-br from-orange-500 to-orange-600 text-white p-6 rounded-2xl shadow-lg">
                   <p className="text-sm opacity-90">طلبات التوصيل</p>
                   <p className="text-3xl font-bold mt-2">{pendingDeliveries}</p>
                 </div>
-                <div className="bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-2xl shadow-lg">
-                  <p className="text-sm opacity-90">مخزون منخفض</p>
-                  <p className="text-3xl font-bold mt-2">{lowStockItems.length}</p>
+                <div className="bg-linear-to-br from-purple-500 to-purple-600 text-white p-6 rounded-2xl shadow-lg">
+                  <p className="text-sm opacity-90">قيمة المخزون</p>
+                  <p className="text-3xl font-bold mt-2">{totalStockValue} ج.م</p>
+                </div>
+              </div>
+
+              {/* بطاقات المخزون والمصاريف بشكل بارز */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* بطاقة المخزون */}
+                <div className="bg-white rounded-2xl shadow-sm p-6 border-2 border-emerald-200">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-3">
+                      <Package size={28} className="text-emerald-600" />
+                      <h3 className="text-xl font-bold text-gray-800">المخزون الحالي</h3>
+                    </div>
+                    {isAdminUser && (
+                      <button 
+                        onClick={() => setActiveTab('Inventory')}
+                        className="text-sm text-emerald-600 hover:text-emerald-700 font-bold"
+                      >
+                        إدارة المخزون →
+                      </button>
+                    )}
+                  </div>
+                  
+                  {/* عرض أهم أصناف المخزون */}
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {stock.slice(0, 5).map(item => {
+                      const isLow = item.qty <= item.minStock;
+                      return (
+                        <div key={item.id} className={`flex justify-between items-center p-3 rounded-xl ${isLow ? 'bg-red-50' : 'bg-gray-50'}`}>
+                          <div className="text-right">
+                            <p className="font-bold text-gray-800">{item.name}</p>
+                            <p className="text-xs text-gray-500">{item.category}</p>
+                          </div>
+                          <div className="text-left">
+                            <p className={`font-bold ${isLow ? 'text-red-600' : 'text-emerald-600'}`}>
+                              {item.qty} قطعة
+                            </p>
+                            {isLow && (
+                              <p className="text-xs text-red-500">⚠️ أقل من الحد</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {lowStockItems.length > 0 && (
+                    <div className="mt-4 p-3 bg-red-100 rounded-xl">
+                      <p className="text-red-700 font-bold text-sm flex items-center gap-2">
+                        <AlertCircle size={16} />
+                        تنبيه: {lowStockItems.length} أصناف تحتاج لإعادة تعبئة
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* بطاقة المصاريف */}
+                <div className="bg-white rounded-2xl shadow-sm p-6 border-2 border-red-200">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-3">
+                      <TrendingDown size={28} className="text-red-600" />
+                      <h3 className="text-xl font-bold text-gray-800">آخر المصاريف</h3>
+                    </div>
+                    {isAdminUser && (
+                      <button 
+                        onClick={() => setActiveTab('Expenses')}
+                        className="text-sm text-red-600 hover:text-red-700 font-bold"
+                      >
+                        عرض الكل →
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {expenses.slice(0, 5).map(exp => (
+                      <div key={exp.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                        <div className="text-right">
+                          <p className="font-bold text-gray-800">{exp.title}</p>
+                          <p className="text-xs text-gray-500">{exp.date} • {exp.category}</p>
+                        </div>
+                        <p className="font-bold text-red-600">-{exp.amount} ج.م</p>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-4 p-3 bg-red-100 rounded-xl">
+                    <p className="text-red-700 font-bold flex justify-between items-center">
+                      <span>إجمالي المصاريف</span>
+                      <span>{totalExpenses} ج.م</span>
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -448,7 +555,7 @@ export default function ProfessionalPOS() {
                       const isOutOfStock = stockItem && stockItem.qty <= 0;
                       return (
                         <div key={p.id} onClick={() => !isOutOfStock && addToCart(p)} 
-                             className={`bg-emerald-600 text-white rounded-[32px] p-6 cursor-pointer hover:scale-105 hover:shadow-2xl transition-all relative overflow-hidden group ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                             className={`bg-emerald-600 text-white rounded-4xl p-6 cursor-pointer hover:scale-105 hover:shadow-2xl transition-all relative overflow-hidden group ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}>
                           <div className="absolute -right-4 -top-4 opacity-10 group-hover:rotate-12 transition-transform">
                             <Utensils size={100} />
                           </div>
@@ -471,7 +578,7 @@ export default function ProfessionalPOS() {
                     const isOutOfStock = stockItem && stockItem.qty <= 0;
                     return (
                       <div key={p.id} onClick={() => !isOutOfStock && addToCart(p)} 
-                           className={`bg-white border border-gray-100 rounded-[32px] p-6 cursor-pointer hover:shadow-xl transition-all group ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                           className={`bg-white border border-gray-100 rounded-4xl p-6 cursor-pointer hover:shadow-xl transition-all group ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         <div className="text-5xl mb-4 text-center group-hover:scale-110 transition-transform">{p.img}</div>
                         <h3 className="font-bold text-center text-gray-700">{p.nameAr}</h3>
                         <p className="text-center font-black text-xl mt-2 text-emerald-600">{p.price} <small className="text-xs text-gray-400">ج.م</small></p>
@@ -481,7 +588,7 @@ export default function ProfessionalPOS() {
                   })}
                 </div>
                 {filteredProducts.length === 0 && (
-                  <div className="text-center py-20 text-gray-400 font-bold italic">لا توجد نتائج بحث مطابقة لـ "{searchQuery}"</div>
+                  <div className="text-center py-20 text-gray-400 font-bold italic">لا توجد نتائج بحث مطابقة لـ «{searchQuery}»</div>
                 )}
               </section>
             </div>
@@ -498,13 +605,35 @@ export default function ProfessionalPOS() {
                 </button>
               </div>
 
+              {/* إحصائيات المخزون */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-emerald-50 p-4 rounded-xl">
+                  <p className="text-sm text-emerald-600">إجمالي الأصناف</p>
+                  <p className="text-2xl font-bold text-emerald-700">{stock.length}</p>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <p className="text-sm text-blue-600">إجمالي القطع</p>
+                  <p className="text-2xl font-bold text-blue-700">{stock.reduce((sum, i) => sum + i.qty, 0)}</p>
+                </div>
+                <div className="bg-purple-50 p-4 rounded-xl">
+                  <p className="text-sm text-purple-600">قيمة المخزون</p>
+                  <p className="text-2xl font-bold text-purple-700">{totalStockValue} ج.م</p>
+                </div>
+              </div>
+
               {lowStockItems.length > 0 && (
                 <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6">
-                  <p className="text-red-700 font-bold">⚠️ تنبيه: الأصناف التالية أقل من 5 قطع</p>
-                  <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertCircle size={20} className="text-red-600" />
+                    <p className="text-red-700 font-bold">تنبيه: الأصناف التالية أقل من الحد الأدنى ({lowStockItems[0]?.minStock || 5} قطع)</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
                     {lowStockItems.map(item => (
-                      <span key={item.id} className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
+                      <span key={item.id} className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                         {item.name} ({item.qty} قطع)
+                        <button onClick={() => updateStockQty(item.id, 5)} className="text-xs bg-red-200 px-2 py-0.5 rounded-full hover:bg-red-300">
+                          +5
+                        </button>
                       </span>
                     ))}
                   </div>
@@ -514,16 +643,29 @@ export default function ProfessionalPOS() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {stock.map(item => (
                   <div key={item.id} className={`bg-white p-6 rounded-3xl shadow-sm border-2 ${item.qty <= item.minStock ? 'border-red-300 bg-red-50/30' : 'border-gray-100'}`}>
-                    <h3 className="font-bold text-lg">{item.name}</h3>
-                    <p className="text-gray-500 text-sm">{item.category}</p>
+                    <div className="flex justify-between items-start">
+                      <div className="text-right">
+                        <h3 className="font-bold text-lg">{item.name}</h3>
+                        <p className="text-gray-500 text-sm">{item.category}</p>
+                      </div>
+                      {item.qty <= item.minStock && (
+                        <AlertCircle size={20} className="text-red-500" />
+                      )}
+                    </div>
                     <p className={`text-3xl font-black mt-4 ${item.qty <= item.minStock ? 'text-red-500' : 'text-emerald-600'}`}>
                       {item.qty} <span className="text-base font-normal">قطعة</span>
                     </p>
                     <div className="flex gap-3 mt-4">
-                      <button onClick={() => updateStockQty(item.id, 1)} className="flex-1 bg-gray-100 py-2 rounded-xl hover:bg-gray-200">+ زيادة</button>
-                      <button onClick={() => updateStockQty(item.id, -1)} className="flex-1 bg-gray-100 py-2 rounded-xl hover:bg-gray-200" disabled={item.qty <= 0}>- إنقاص</button>
+                      <button onClick={() => updateStockQty(item.id, 1)} className="flex-1 bg-emerald-100 text-emerald-700 py-2 rounded-xl hover:bg-emerald-200 font-bold">+ زيادة</button>
+                      <button onClick={() => updateStockQty(item.id, -1)} className="flex-1 bg-red-100 text-red-700 py-2 rounded-xl hover:bg-red-200 font-bold" disabled={item.qty <= 0}>- إنقاص</button>
+                      <button onClick={() => deleteStockItem(item.id)} className="bg-gray-100 text-gray-600 p-2 rounded-xl hover:bg-gray-200">
+                        <Trash2 size={18} />
+                      </button>
                     </div>
-                    <p className="mt-3 text-gray-600">السعر: {item.price} ج.م</p>
+                    <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between">
+                      <p className="text-gray-600">السعر: {item.price} ج.م</p>
+                      <p className="text-gray-500 text-sm">الحد الأدنى: {item.minStock}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -541,22 +683,40 @@ export default function ProfessionalPOS() {
                 </button>
               </div>
 
-              <div className="bg-gradient-to-r from-red-500 to-red-600 text-white p-6 rounded-2xl mb-6">
-                <p className="text-sm opacity-90">إجمالي المصاريف</p>
-                <p className="text-4xl font-bold mt-2">{totalExpenses} ج.م</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-linear-to-r from-red-500 to-red-600 text-white p-6 rounded-2xl">
+                  <p className="text-sm opacity-90">إجمالي المصاريف</p>
+                  <p className="text-4xl font-bold mt-2">{totalExpenses} ج.م</p>
+                </div>
+                <div className="bg-gray-100 p-6 rounded-2xl">
+                  <p className="text-sm text-gray-600">عدد المصروفات</p>
+                  <p className="text-4xl font-bold text-gray-700 mt-2">{expenses.length}</p>
+                </div>
               </div>
 
               <div className="space-y-4">
                 {expenses.map(exp => (
-                  <div key={exp.id} className="bg-white p-5 rounded-2xl flex justify-between items-center shadow-sm">
-                    <div>
+                  <div key={exp.id} className="bg-white p-5 rounded-2xl flex justify-between items-center shadow-sm hover:shadow-md transition-all">
+                    <div className="text-right">
                       <p className="font-bold text-lg">{exp.title}</p>
                       <p className="text-sm text-gray-500">{exp.date} - {exp.category}</p>
                     </div>
-                    <p className="text-2xl font-bold text-red-600">-{exp.amount} ج.م</p>
+                    <div className="flex items-center gap-4">
+                      <p className="text-2xl font-bold text-red-600">-{exp.amount} ج.م</p>
+                      <button onClick={() => deleteExpense(exp.id)} className="text-red-400 hover:text-red-600">
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
+
+              {expenses.length === 0 && (
+                <div className="text-center py-12 bg-white rounded-2xl">
+                  <Wallet size={48} className="mx-auto text-gray-300 mb-3" />
+                  <p className="text-gray-400">لا توجد مصاريف مسجلة</p>
+                </div>
+              )}
             </div>
           )}
 
@@ -720,7 +880,7 @@ export default function ProfessionalPOS() {
       </main>
 
       {/* Cart Sidebar - سلة المشتريات */}
-      <aside className="w-96 bg-[#00a684] p-6 text-white flex flex-col shadow-2xl">
+      <aside className="w-96 bg-[#00a684] p-6 text-white flex flex-col shadow-2xl rounded-4xl m-2">
         <div className="bg-black/20 rounded-3xl p-5 mb-6 border border-white/10">
           <h4 className="font-bold text-xs mb-3 flex flex-row-reverse items-center gap-2"><MapPin size={14}/> بيانات العميل</h4>
           {orderType === 'delivery' ? (
@@ -762,7 +922,7 @@ export default function ProfessionalPOS() {
           ))}
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto max-h-[400px]">
+        <div className="flex-1 space-y-4 overflow-y-auto max-h-100">
           {cart.map(item => (
             <div key={item.id} className="flex flex-row-reverse justify-between items-center bg-white/10 p-4 rounded-2xl">
               <div className="flex flex-row-reverse items-center gap-3">
@@ -827,6 +987,8 @@ export default function ProfessionalPOS() {
                 value={newStockItem.qty} onChange={e => setNewStockItem({...newStockItem, qty: Number(e.target.value)})} />
               <input type="number" placeholder="السعر" className="w-full border rounded-xl p-2"
                 value={newStockItem.price} onChange={e => setNewStockItem({...newStockItem, price: Number(e.target.value)})} />
+              <input type="text" placeholder="التصنيف" className="w-full border rounded-xl p-2"
+                value={newStockItem.category} onChange={e => setNewStockItem({...newStockItem, category: e.target.value})} />
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={addStockItem} className="flex-1 bg-emerald-500 text-white py-2 rounded-xl">إضافة</button>
@@ -848,6 +1010,8 @@ export default function ProfessionalPOS() {
                 value={newExpense.amount} onChange={e => setNewExpense({...newExpense, amount: Number(e.target.value)})} />
               <input type="text" placeholder="التصنيف" className="w-full border rounded-xl p-2"
                 value={newExpense.category} onChange={e => setNewExpense({...newExpense, category: e.target.value})} />
+              <textarea placeholder="ملاحظات (اختياري)" className="w-full border rounded-xl p-2"
+                value={newExpense.notes} onChange={e => setNewExpense({...newExpense, notes: e.target.value})} />
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={addExpense} className="flex-1 bg-emerald-500 text-white py-2 rounded-xl">إضافة</button>

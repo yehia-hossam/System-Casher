@@ -64,7 +64,6 @@ export default function AdminPage() {
     }
 
     addProduct({
-      id: Date.now().toString(),
       name: newProduct.name || newProduct.nameAr,
       nameAr: newProduct.nameAr,
       price: newProduct.price,
@@ -97,7 +96,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-emerald-700 to-teal-700 text-white p-5 shadow-lg">
+      <div className="bg-linear-to-r from-emerald-700 to-teal-700 text-white p-5 shadow-lg">
         <div className="flex justify-between items-center max-w-screen-2xl mx-auto">
           <div className="flex items-center gap-4">
             <div className="text-3xl">🛡️</div>
@@ -134,7 +133,7 @@ export default function AdminPage() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as 'dashboard' | 'products' | 'cashiers' | 'reports')}
                 className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-right transition-all ${
                   activeTab === tab.id 
                     ? 'bg-emerald-50 text-emerald-700 font-semibold' 

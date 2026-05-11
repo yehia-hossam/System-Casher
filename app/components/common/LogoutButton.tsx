@@ -1,9 +1,9 @@
 // components/common/LogoutButton.tsx
 'use client';
-import { usePosStore } from '@/store/usePosStore';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export default function LogoutButton() {
-  const logout = usePosStore((state) => state.logout);
+  const logout = useAuthStore((state) => state.logout);
 
   return (
     <button

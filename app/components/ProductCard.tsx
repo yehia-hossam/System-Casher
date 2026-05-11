@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 
 interface Dish {
   id: string;
@@ -22,11 +23,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ dish, onAddToCart }) => {
   return (
     <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 group border border-gray-100">
       {/* Image / Emoji Section */}
-      <div className="h-52 bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center relative overflow-hidden">
+      <div className="h-52 bg-linear-to-br from-emerald-50 to-teal-50 flex items-center justify-center relative overflow-hidden">
         {dish.image ? (
-          <img 
-            src={dish.image} 
+          <Image
+            src={dish.image}
             alt={dish.name}
+            width={208}
+            height={208}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (

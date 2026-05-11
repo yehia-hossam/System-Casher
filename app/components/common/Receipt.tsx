@@ -16,7 +16,7 @@ export default function Receipt({ order }: ReceiptProps) {
   const total = order.total;
 
   return (
-    <div id="receipt" className="w-[380px] bg-white p-6 text-sm font-mono mx-auto border border-gray-300" dir="rtl">
+    <div id="receipt" className="w-95 bg-white p-6 text-sm font-mono mx-auto border border-gray-300" dir="rtl">
       {/* Header */}
       <div className="text-center border-b-2 border-dashed pb-4 mb-4">
         <h1 className="text-3xl font-bold tracking-wider">مطعم إلشامي</h1>

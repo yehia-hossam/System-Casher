@@ -2,12 +2,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Product } from '../types';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   type: 'add-cashier' | 'add-item';
-  onAddItem?: (dish: any) => void;
+  onAddItem?: (dish: Product) => void;
 }
 
 const SelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, type, onAddItem }) => {
@@ -34,11 +35,13 @@ const SelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, type, onAddItem
         onClose();
       }
     } else if (type === 'add-item' && onAddItem) {
-      const newDish = {
+      const newDish: Product = {
+        id: `dish-${Date.now()}`,
         name: formData.name,
+        nameAr: formData.name,
         price: parseFloat(formData.price),
-        emoji: formData.emoji,
         category: formData.category,
+        stock: 0,
       };
       onAddItem(newDish);
       onClose();
@@ -46,7 +49,7 @@ const SelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, type, onAddItem
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-100">
       <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6">
           {type === 'add-cashier' ? 'Add New Cashier' : 'Add New Menu Item'}

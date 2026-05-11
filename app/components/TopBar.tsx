@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { Bell, User } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 const TopBar: React.FC = () => {
@@ -44,13 +44,13 @@ const TopBar: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="text-right">
             <div className="font-semibold text-sm text-gray-800">
-              {user?.fullName || user?.username || "Alex Rivera"}
+              {user?.name || "Alex Rivera"}
             </div>
             <div className="text-xs text-emerald-600 font-medium">
               {user?.role === 'admin' ? 'Administrator' : 'Cashier'}
             </div>
           </div>
-          <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center text-white text-xl ring-2 ring-white shadow">
+          <div className="w-9 h-9 bg-linear-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center text-white text-xl ring-2 ring-white shadow">
             👨‍💼
           </div>
         </div>

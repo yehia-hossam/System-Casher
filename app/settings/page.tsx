@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { usePosStore } from '@/store/usePosStore';
-import LogoutButton from '@/components/common/LogoutButton';
-import ItemsTable from '@/components/settings/ItemsTable';
-import CashiersTable from '@/components/settings/CashiersTable';
-import ItemForm from '@/components/settings/ItemForm';
-import CashierForm from '@/components/settings/CashierForm';
-import FormModal from '@/components/common/FormModal';
+import { usePosStore } from '../store/usePosStore';
+import LogoutButton from '../components/common/LogoutButton';
+import ItemsTable from '../components/settings/ItemsTable';
+import CashiersTable from '../components/settings/CashiersTable';
+import ItemForm from '../components/settings/ItemForm';
+import CashierForm from '../components/settings/CashierForm';
+import FormModal from '../components/common/FormModal';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'items' | 'cashiers'>('items');
