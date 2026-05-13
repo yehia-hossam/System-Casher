@@ -28,12 +28,12 @@ import { useAuthStore } from '../store/useAuthStore';
 
 // --- البيانات التجريبية المنظمة ---
 const PRODUCTS = [
-  { id: 1, nameAr: 'هامبرجر', price: 85.00, img: '🍔', category: 'وجبات', popular: true, stockId: 1 },
-  { id: 2, nameAr: 'بيتزا', price: 150.00, img: '🍕', category: 'بيتزا', popular: true, stockId: 2 },
-  { id: 3, nameAr: 'سوشي', price: 220.00, img: '🍣', category: 'سوشي', popular: false, stockId: 3 },
-  { id: 4, nameAr: 'طاجن عكاوي', price: 180.00, img: '🥘', category: 'طواجن', popular: false, stockId: 4 },
-  { id: 5, nameAr: 'كريب دجاج', price: 75.00, img: '🌯', category: 'معجنات', popular: true, stockId: 5 },
-  { id: 6, nameAr: 'عصير برتقال', price: 35.00, img: '🍊', category: 'مشروبات', popular: false, stockId: 6 },
+  { id: 1, nameAr: ' ساندوتش بياض', price: 85.00, img: '🌮', category: 'وجبات', popular: true, stockId: 1 },
+  { id: 2, nameAr: 'ساندوتش جمبري', price: 150.00, img: '🍤', category: 'بيتزا', popular: true, stockId: 2 },
+  { id: 3, nameAr: 'ساندوتش سبيط', price: 220.00, img: '🌭', category: 'سوشي', popular: false, stockId: 3 },
+  { id: 4, nameAr: ' ساندوتش ', price: 180.00, img: '🥘', category: 'طواجن', popular: false, stockId: 4 },
+  { id: 5, nameAr: ' ساندوتش جزل ', price: 75.00, img: '🌯', category: 'معجنات', popular: true, stockId: 5 },
+  { id: 6, nameAr: ' بيبسي', price: 35.00, img: '🥤', category: 'مشروبات', popular: false, stockId: 6 },
 ];
 
 // المخزون المتطور
@@ -524,23 +524,13 @@ export default function ProfessionalPOS() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">قائمة الطعام السريعة</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {PRODUCTS.slice(0, 4).map(p => (
-                    <div key={p.id} onClick={() => addToCart(p)} 
-                         className="bg-gray-50 rounded-xl p-4 text-center cursor-pointer hover:shadow-md transition-all">
-                      <div className="text-3xl mb-2">{p.img}</div>
-                      <p className="font-bold text-gray-700 text-sm">{p.nameAr}</p>
-                      <p className="text-emerald-600 font-bold">{p.price} ج.م</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+           
             </div>
           )}
 
           {/* ==================== المنيو ==================== */}
+
+
           {activeTab === 'Restaurants' && (
             <div className="space-y-12">
               {popularItems.length > 0 && (
@@ -565,10 +555,18 @@ export default function ProfessionalPOS() {
                           {isOutOfStock && <p className="text-center text-xs mt-2">غير متوفر</p>}
                         </div>
                       );
+                      
                     })}
+                    
+                    
                   </div>
+                  
                 </section>
               )}
+
+  
+
+
 
               <section>
                 <h2 className="text-xl font-black text-gray-800 mb-6 border-r-4 border-emerald-500 pr-3 text-right">قائمة الطعام</h2>
@@ -591,8 +589,26 @@ export default function ProfessionalPOS() {
                   <div className="text-center py-20 text-gray-400 font-bold italic">لا توجد نتائج بحث مطابقة لـ «{searchQuery}»</div>
                 )}
               </section>
+              {/* ========================قائمة الاضافات==================================== */}
+               <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">قائمة الاضافات </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {PRODUCTS.slice(0, 4).map(p => (
+                    <div key={p.id} onClick={() => addToCart(p)} 
+                         className="bg-emerald-600  rounded-xl p-4 text-center cursor-pointer hover:scale-105 hover:shadow-2xl transition-all relative overflow-hidden group">
+                      <div className="text-3xl mb-2">{p.img}</div>
+                      <p className="font-bold text-white text-sm">{p.nameAr}</p>
+                      <p className="text-white font-bold">{p.price} ج.م</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
+
+            
           )}
+
+          
 
           {/* ==================== المخزون ==================== */}
           {activeTab === 'Inventory' && isAdminUser && (
@@ -917,7 +933,7 @@ export default function ProfessionalPOS() {
           {(['delivery', 'dine_in', 'takeaway'] as const).map(type => (
             <button key={type} onClick={() => setOrderType(type)}
               className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition ${orderType === type ? 'bg-orange-500 shadow-lg' : 'opacity-60'}`}>
-              {type === 'delivery' ? 'توصيل' : type === 'dine_in' ? 'صالة' : 'سفري'}
+              {type === 'delivery' ? 'توصيل' : type === 'dine_in' ? 'صالة' : 'تيك أواي'}
             </button>
           ))}
         </div>
@@ -968,7 +984,7 @@ export default function ProfessionalPOS() {
 
           <button onClick={handleConfirmOrder}
             className="w-full bg-black py-4 rounded-2xl font-black text-lg mt-4 shadow-xl hover:bg-black/90 active:scale-95 transition-all">
-            <Printer className="inline ml-2" size={20} /> {orderType === 'delivery' ? 'طلب توصيل' : 'تأكيد وطباعة'}
+            <Printer className="inline ml-2" size={20} /> {orderType === 'delivery' ? 'طلب توصيل' : ' تأكيد الطلب'}
           </button>
         </div>
       </aside>
@@ -1032,7 +1048,7 @@ export default function ProfessionalPOS() {
               <input type="password" placeholder="كلمة المرور" className="w-full border rounded-xl p-2"
                 value={newCashier.password} onChange={e => setNewCashier({...newCashier, password: e.target.value})} />
             </div>
-            <div className="flex gap-3 mt-6">
+            <div className="flex gap-3 mt-6 ">
               <button onClick={addCashier} className="flex-1 bg-emerald-500 text-white py-2 rounded-xl">إضافة</button>
               <button onClick={() => setShowAddCashierModal(false)} className="flex-1 bg-gray-200 py-2 rounded-xl">إلغاء</button>
             </div>

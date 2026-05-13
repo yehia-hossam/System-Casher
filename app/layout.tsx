@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "نظام إلشامي | نقاط البيع",
+  title: "نظام لإدارة المطاعم والكاشير",
   description: "نظام إدارة المطاعم والكاشير",
   icons: {
     icon: "/favicon.ico",
